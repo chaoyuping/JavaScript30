@@ -1,22 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Type Ahead 👀</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <form class="search-form">
-    <input type="text" class="search" placeholder="City or State">
+    <input type="text" class="search" id="search" placeholder="City or State">
     <ul class="suggestions">
       <li>Filter for a city</li>
       <li>or a state</li>
     </ul>
   </form>
-<script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+  <script>
+    const endpoint =
+      'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
 
-</script>
-  </body>
+    const cities = [];
+
+    fetch(endpoint)
+      .then(res => res.json())
+      .then(data => cities.push(...data));
+  
+   function findMatches(wordToMatch, cities){
+     return cities.filter(el =>{
+       return el.city.match(wordToMatch) || el.state.match(wordToMatch);
+     })
+  }
+ function numberWithCommas(number){
+  return number.replace(/\B(?=(?:\d{3})+\b)/g, ',');
+ }
+
+
+
+    function displayMatches(){
+      if(this.value == '') return false;
+      let reg = new RegExp(this.value , 'gi');
+      let resultData = findMatches(reg,cities);
+      let html = resultData.map(item=>{
+        const cityName  = item.city.replace(reg,`<span class="hl">${reg}</span>`);
+        const stateName = item.state.replace(reg,`<span class="hl">${reg}</span>`);
+        return `<li>
+        <span class="name">${ cityName},${stateName}</span>
+        <span  class="population">${ numberWithCommas(item.population)}</span>
+        </li>`
+      }).join('');
+      suggestions.innerHTML = html;
+
+    };
+
+    let searchInput = document.querySelector('.search');
+    let suggestions = document.querySelector('.suggestions');
+    searchInput.addEventListener('input',displayMatches);
+
+
+  </script>
+</body>
+
 </html>
