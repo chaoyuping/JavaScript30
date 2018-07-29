@@ -57,11 +57,25 @@ let  bandUl = document.querySelector('#bands');
 
 
 //使用sort 不會建立新的 Array 物件
- bands.sort();
+//https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+ 
 
 
+function strip(str){
+    return str.replace( /^(the |an |a )/i ,'').trim();
+}
 
-</script>
+// function strip (word) {
+//     let regex = new RegExp('^(a |the |an )', 'i')
+//     return word.replace(regex, '').trim()
+// }
+ const  str = bands.sort((a,b)=> strip(a) >strip(b) ? 1  : -1)
+
+
+let sortLists = bands.map(el=> `<li>${el}</li>`).join('');
+
+bandUl.innerHTML = sortLists;
+</script> 
 
 </body>
 </html>
