@@ -1,40 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Mouse Shadow</title>
 </head>
+
 <body>
 
-  <div class="hero">
-    <h1 contenteditable>🔥WOAH!</h1>
+
+  <h1 class="move">
+
+    <span class="color01">MOUSE</span>
+    <span class="color02">MOVE</span>
+  </h1>
+
+  <div class="container">
+    <article>
+      <section>
+        <p>Inhabit hearing perhaps on ye do no. It maids decay as there he. Smallest on suitable disposed do although blessing
+          he juvenile in. Society or if excited forbade. Here name off yet she long sold easy whom. Differed oh cheerful
+          procured pleasure securing suitable in. Hold rich on an he oh fine. Chapter ability shyness article welcome be
+          do on service.
+        </p>
+        <p> Is he staying arrival address earnest. To preference considered it themselves inquietude collecting estimating. View
+          park for why gay knew face. Next than near to four so hand. Times so do he downs me would. Witty abode party her
+          found quiet law. They door four bed fail now have.
+        </p>
+        <p> Piqued favour stairs it enable exeter as seeing. Remainder met improving but engrossed sincerity age. Better but
+          length gay denied abroad are. Attachment astonished to on appearance imprudence so collecting in excellence. Tiled
+          way blind lived whose new. The for fully had she there leave merit enjoy forth.
+        </p>
+        <p> Sex and neglected principle ask rapturous consulted. Object remark lively all did feebly excuse our wooded. Old her
+          object chatty regard vulgar missed. Speaking throwing breeding betrayed children my to. Me marianne no he horrible
+          produced ye. Sufficient unpleasing an insensible motionless if introduced ye. Now give nor both come near many
+          late.
+        </p>
+        <p>Inhabit hearing perhaps on ye do no. It maids decay as there he. Smallest on suitable disposed do although blessing
+          he juvenile in. Society or if excited forbade. Here name off yet she long sold easy whom. Differed oh cheerful
+          procured pleasure securing suitable in. Hold rich on an he oh fine. Chapter ability shyness article welcome be
+          do on service.
+        </p>
+        <p> Is he staying arrival address earnest. To preference considered it themselves inquietude collecting estimating. View
+          park for why gay knew face. Next than near to four so hand. Times so do he downs me would. Witty abode party her
+          found quiet law. They door four bed fail now have.
+        </p>
+
+      </section>
+    </article>
   </div>
 
   <style>
-  html {
-    color:black;
-    font-family: sans-serif;
-  }
+    html {
+      color: black;
+      font-family: sans-serif;
+    }
 
-  body {
-    margin: 0;
-  }
+    body {
+      margin: 0;
+      overflow-x: hidden
+    }
 
-  .hero {
-    min-height: 100vh;
-    display:flex;
-    justify-content: center;
-    align-items: center;
-    color:black;
-  }
 
-  h1 {
-    text-shadow: 10px 10px 0 rgba(0,0,0,1);
-    font-size: 100px;
-  }
+    .container {
+      width: 80%;
+      max-width: 1170px;
+      margin: 0 auto;
+      padding: 0 50px 50px 50px;
+      box-sizing: border-box;
+    }
+
+
+    .move {
+
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+   
+      flex-direction: column;
+    }
+
+    .move {
+      /* text-shadow:  9px 7px 0 rgb(178, 174, 174) */
+    }
+
+    .move span {
+      transform: skew(5deg);
+      padding: 0px 15px;
+      margin: 5px 0;
+      font-size: 125px;
+      line-height: 1em;
+
+      background: rgb(224, 224, 224);
+
+    }
+
+    .color01 {
+      color: rgb(111, 54, 216);
+    }
+
+    .color02 {
+      color: rgb(255, 157, 28);
+    }
+
+    p {
+      background: rgb(224, 224, 224);
+    }
+
+    .container {
+      background: rgb(255, 232, 203);
+    }
+
+    section {
+      background: rgb(224, 224, 224);
+    }
+
+    article {
+      background: rgb(255, 232, 203);
+    }
   </style>
 
-<script>
-</script>
+  <script>
+    let wrapper = document.querySelector('.move');
+    let walk = 80;
+    // this 為監聽的東西,e.target 不一定為監聽的東西 
+    let handleMove = function (e) {
+      //ES6 解構賦值
+      
+      // 不同e.taeget 有不一樣的數值  , 監聽的物件的移動大小剛好等於滑鼠移動位置
+      let {offsetX: x, offsetY: y } = e;
+
+     //監聽物件的寬與高 算比例要用 
+      let {offsetWidth:ItemWidth,offsetHeight:ItemHeight} = wrapper;
+
+    //碰到e.target 為 span 時,跑出的數值就不等於滑鼠目前的移動位置 進行修正
+    
+      // if (this !== e.target) // 當為 span時
+    if (e.target.nodeName == 'SPAN') 
+     {
+      x = x + e.target.offsetLeft;
+      y = y +  e.target.offsetTop;
+    }
+     //比例計算 ,最多偏移值為walk 值
+      let walkX = Math.round(x /ItemWidth * walk) - (walk/2);
+      let walkY = Math.round(y /ItemHeight * walk)  - (walk/2);
+
+      wrapper.style.textShadow =  `
+      ${walkX }px ${walkY }px 0 rgb(178, 174, 174)
+      `;
+
+      // `
+     // ${walkX }px ${walkY }px 0 rgb(178, 174, 174),
+     // ${walkX * -1}px ${walkY }px 0 rgb(178, 174, 174),
+     // ${walkX }px ${walkY * -1}px 0 rgb(178, 174, 174),
+     // ${walkX * -1}px ${walkY * -1}px 0 rgb(178, 174, 174)
+     // `
+    }
+    wrapper.addEventListener('mousemove', handleMove);
+  </script>
 </body>
+
 </html>
