@@ -5,8 +5,28 @@
   <title>Key Detection</title>
   <script type="text/javascript" src="http://www.cornify.com/js/cornify.js"></script>
 </head>
-<body>
+<body> 
 <script>
+  let inputCode=[];
+  const secretCode = 'qq'
+
+  window.addEventListener('keyup',(e)=>{
+    inputCode.push(e.key);
+    
+    // begin 若沒有到-6 的話會變成 0
+    // 此可以維持六個字元 
+     let cont =  inputCode.slice(-secretCode.length,inputCode.length).join('');
+    
+     
+//也可以用cont.includes(secretCode)
+     if(cont.search(secretCode) === 0){
+      console.log('DING DING!');
+      cornify_add();
+     }
+
+    console.log(cont)
+  })
 </script>
 </body>
 </html>
+  
