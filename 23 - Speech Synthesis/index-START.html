@@ -1,41 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Speech Synthesis</title>
   <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+  <a href="http://blog.zhusee.in/post/56286985943/web-speech-api-part-i-using-speech-synthesis-to-make-bro" target="_blank">參考網址</a>
+  <div class="voiceinator">
 
-    <div class="voiceinator">
+    <h1>The Voiceinator 5000</h1>
 
-      <h1>The Voiceinator 5000</h1>
+    <select name="voice" id="voices">
+      <option value="">Select A Voice</option>
+    </select>
+    <!-- 講話的音量(0~1) -->
+    <label for="volume">volume:</label>
+    <input type="range" name="volume" min="0" max="1" value="1" step="0.1">
+    <!-- 講話的音量(0~3) -->
+    <label for="rate">Rate:</label>
+    <input type="range" name="rate" min="0" max="3" value="1" step="0.1">
 
-      <select name="voice" id="voices">
-        <option value="">Select A Voice</option>
-      </select>
+    <!--講話的節拍(0~2)-->
+    <label for="pitch">Pitch:</label>
+    <input name="pitch" type="range" min="0" max="2" step="0.1">
 
-      <label for="rate">Rate:</label>
-      <input name="rate" type="range" min="0" max="3" value="1" step="0.1">
 
-      <label for="pitch">Pitch:</label>
+    <textarea name="text">Hello! I love JavaScript 👍</textarea>
+    <button id="stop">Stop!</button>
+    <button id="speak">Speak</button>
 
-      <input name="pitch" type="range" min="0" max="2" step="0.1">
-      <textarea name="text">Hello! I love JavaScript 👍</textarea>
-      <button id="stop">Stop!</button>
-      <button id="speak">Speak</button>
+  </div>
 
-    </div>
+  <script>
+    //代表「要講出聲的話」   要交給  window.SpeechSynthesis.speak()來唸出來
 
-<script>
-  const msg = new SpeechSynthesisUtterance();
-  let voices = [];
-  const voicesDropdown = document.querySelector('[name="voice"]');
-  const options = document.querySelectorAll('[type="range"], [name="text"]');
-  const speakButton = document.querySelector('#speak');
-  const stopButton = document.querySelector('#stop');
-</script>
+    const msg = new SpeechSynthesisUtterance();
+
+    const voicesDropdown = document.querySelector('[name="voice"]');
+    let voices = [];
+
+    //可以用,選取多個
+    const options = document.querySelectorAll('[type="range"],[name="text"]');
+    const speakButton = document.querySelector('#speak');
+    const stopButton = document.querySelector('#stop');
+    msg.text = document.querySelector('[name="text"]').value;
+
+    // window.speechSynthesis 的 getVoices() 方法取得目前系統中所有可用的語音引擎清單
+    function populateVoices() {
+      voices = this.getVoices();
+      console.log( voices);
+      voicesDropdown.innerHTML = voices
+          .filter(voice => voice.lang.includes('en'))
+          .map(el => `<option value="${el.name}"> ${el.lang} ${el.name} </option>`)
+        .join('');
+    }
+
+    //每當有調整 抓值
+    function adjustment(e) {
+      msg[this.name] = this.value;
+      toggle();
+    };
+
+
+    //  語音引擎來源
+    // voice 這個屬性並不在 Web Speech API 的規格裡面，是 WebKit 額外實作的屬性，用來更換發音用的語音引擎。
+    function setVoice() {
+      msg.voice = voices.find(voice => voice.name === this.value);
+      toggle();
+    }
+
+    // 讓電腦講話
+    function toggle(startOver = true) {
+      speechSynthesis.cancel();
+      if(startOver){
+        speechSynthesis.speak(msg);
+      }
+    };
+
+    //voiceschanged wiki 查詢
+    speechSynthesis.addEventListener('voiceschanged', populateVoices)
+    //取得設定值
+    options.forEach(option => option.addEventListener('change',adjustment));
+    // Array.from(options).map(el => el.addEventListener('input', adjustment));
+    voicesDropdown.addEventListener('change', setVoice);
+    speakButton.addEventListener('click', toggle);
+    stopButton.addEventListener('click',toggle(false));
+  </script>
 
 </body>
+
 </html>
