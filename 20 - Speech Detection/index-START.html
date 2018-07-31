@@ -1,19 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Speech Detection</title>
+
+
 </head>
+
 <body>
-
-  <div class="words" contenteditable>
+    <div class="btnWrapper">
+        <div class="startBtn btn">start</div>
+        <div class="stopBtn btn">stop</div>
+      </div>
+  <!-- contenteditable 讓DIV 也能像INPUT ㄧ樣 -->
+  <div class="words" contenteditable="true">
   </div>
+ 
+  <a style="text-align: center;display: block" href="http://www.oxxostudio.tw/articles/201509/web-speech-api.html" target="_blank">參考來源</a>
+  <script>
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = new SpeechRecognition();
+    recognition.lang = "cmn-Hant-TW"; //可以到官方給的API範例去找尋語系 
+    recognition.interimResults = true; //在講話時會同步進行語音辨識
+    recognition.continuous = false; // false 為停止一段時間便會停止語音辨識
 
-<script>
-  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+   let process = false;
+    const words = document.querySelector('.words');
+    let p = document.createElement('p');
+    words.appendChild(p);
+    //此API為chrome 
+    if (!window.SpeechRecognition) {
+      p.textContent = '無法執行語音辨識'
+      words.appendChild(p);
+    }
+    else{
+    
+    }
 
+    //result 只要有講話就會被觸發
+    recognition.addEventListener('result', e => {
+      // continuous  = true 才會很多行
+      // const transcript = Array.from(e.results)
+      //   .map(el => el[0])
+      //   .map(el => el.transcript)
+      //   .join('');
+      const transcript = e.results[0][0].transcript
+      p.textContent = transcript;
+      words.appendChild(p);
 
-</script>
+      //回傳內容已經結束
+      if (e.results[0].isFinal) {
+        p = document.createElement('p'); // 建立一個新的el
+        words.appendChild(p);
+      }
+    });
+
+    //結束後再重新 進行
+    // recognition.addEventListener('end', recognition.start);
+  
+    recognition.addEventListener('end', (e) =>
+       process ?  recognition.start() :  recognition.stop() 
+       );
+    document.querySelector('.startBtn').addEventListener('click', e => {
+
+      process = true;
+      recognition.start();
+      });
+    document.querySelector('.stopBtn').addEventListener('click',  e => {
+
+      process = false;
+      recognition.stop();
+      });
+  </script>
 
 
   <style>
@@ -22,24 +81,25 @@
     }
 
     body {
-      background:#ffc600;
+      background: #ffc600;
       font-family: 'helvetica neue';
       font-weight: 200;
       font-size: 20px;
     }
 
     .words {
-      max-width:500px;
-      margin:50px auto;
-      background:white;
-      border-radius:5px;
-      box-shadow:10px 10px 0 rgba(0,0,0,0.1);
-      padding:1rem 2rem 1rem 5rem;
+      max-width: 500px;
+      margin: 25px auto 50px;
+      background: white;
+      border-radius: 5px;
+      box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.1);
+      padding: 1rem 2rem 1rem 5rem;
       background: -webkit-gradient(linear, 0 0, 0 100%, from(#d9eaf3), color-stop(4%, #fff)) 0 4px;
       background-size: 100% 3rem;
       position: relative;
-      line-height:3rem;
+      line-height: 3rem;
     }
+
     p {
       margin: 0 0 3rem;
     }
@@ -54,7 +114,25 @@
       border: 1px solid;
       border-color: transparent #efe4e4;
     }
+
+    .btnWrapper {
+      text-align: center;
+      margin-bottom: 30px;
+      margin-top: 50px;
+    }
+
+    .btn {
+      cursor: pointer;
+      display: inline-block;
+      width: 150px;
+      background: #2187f3;
+      padding: 7px;
+      color: #fff;
+      text-align: center;
+
+    }
   </style>
 
 </body>
+
 </html>
