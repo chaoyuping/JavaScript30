@@ -12,7 +12,7 @@
     <div class="item item3">03</div>
     <div class="item item4">04</div>
     <div class="item item5">05</div>
-    <div class="item item6">06</div>
+    <div class="item item6">06</div> 
     <div class="item item7">07</div>
     <div class="item item8">08</div>
     <div class="item item9">09</div>
@@ -35,6 +35,42 @@
   </div>
 
 <script>
+ let items =   document.querySelector('.items');
+ let pageX ;
+ let scrollLeft ;
+ let isDown = false;
+
+ items.addEventListener('mousedown',(e)=>{
+   isDown = true;
+   startX = e.pageX ;
+   scrollLeft = items.scrollLeft;
+   items.classList.add('active');
+   console.log( startX )
+
+ });
+
+ items.addEventListener('mouseleave',(e)=>{
+  isDown = false;
+  items.classList.remove('active');
+ });
+
+ items.addEventListener('mouseup',(e)=>{
+  isDown = false;
+  items.classList.remove('active');
+ });
+
+ items.addEventListener('mousemove',(e)=>{
+
+   if( !isDown)  return;  // stop the fn from running
+   e.preventDefault();
+   const x = e.pageX - startX;
+   const works = x *3;
+   items.scrollLeft = works + scrollLeft;
+   
+
+ });
+
+
 </script>
 
   </body>
