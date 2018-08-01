@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Click and Drag</title>
+  <style>
+
+    .block {
+      cursor: pointer;
+      width: 100px;
+      height: 100px;
+      border-radius: 100%;
+      background: rgb(108, 117, 202);
+      box-shadow: inset -4px -4px 0 hsla(0, 0%, 0%, 0.25);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="block">
+
+ 
+</div>
+  <script>
+
+ // STEP1: 選擇 .block
+const block = document.querySelector('.block')
+
+// STEP2: mousedown, mouseup, mouseleave, mousemove
+
+let isDown
+let startX
+let startY
+let blockPosition
+block.addEventListener('mousedown', function(e){
+    block.classList.add('active')
+    isDown = true
+    blockPosition = block.getBoundingClientRect()
+    startX = e.clientX
+    startY = e.clientY
+})
+block.addEventListener('mouseup', function(e){
+    block.classList.remove('active')
+    isDown = false
+})
+block.addEventListener('mouseleave', function(e){
+    block.classList.remove('active')
+    isDown = false
+})
+block.addEventListener('mousemove', function(e){
+    if (!isDown) {
+        return
+    }
+    
+    let deltaX = startX - e.clientX
+    let deltaY = startY - e.clientY
+    block.style.left = blockPosition.left - deltaX + 'px'
+    block.style.top = blockPosition.top - deltaY + 'px'
+})
+
+  </script>
+
+</body>
+
+</html>

@@ -8,7 +8,7 @@
 
   <div class="site-wrap">
 
-    <h1>Slide in on Scroll</h1>
+    <h1>Slide in on Scroll</h1> 
 
     <p>Consectetur adipisicing elit. Tempore tempora rerum, est autem cupiditate, corporis a qui libero ipsum delectus quidem dolor at nulla, adipisci veniam in reiciendis aut asperiores omnis blanditiis quod quas laborum nam! Fuga ad tempora in aspernatur pariaturlores sunt esse magni, ut, dignissimos.</p>
     <p>Lorem ipsum cupiditate, corporis a qui libero ipsum delectus quidem dolor at nulla, adipisci veniam in reiciendis aut asperiores omnis blanditiis quod quas laborum nam! Fuga ad tempora in aspernatur pariatur fugit quibusdam dolores sunt esse magni, ut, dignissimos.</p>
@@ -42,21 +42,41 @@
 
   </div>
 
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.min.js'></script>
   <script>
-    function debounce(func, wait = 20, immediate = true) {
-      var timeout;
-      return function() {
-        var context = this, args = arguments;
-        var later = function() {
-          timeout = null;
-          if (!immediate) func.apply(context, args);
-        };
-        var callNow = immediate && !timeout;
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-        if (callNow) func.apply(context, args);
-      };
-    }
+     //作者原本提供的
+    // function debounce(func, wait = 20, immediate = true) {
+    //   var timeout;
+    //   return function() {
+    //     var context = this, args = arguments;
+    //     var later = function() {
+    //       timeout = null;
+    //       if (!immediate) func.apply(context, args);
+    //     };
+    //     var callNow = immediate && !timeout;
+    //     clearTimeout(timeout);
+    //     timeout = setTimeout(later, wait);
+    //     if (callNow) func.apply(context, args);
+    //   };
+    // }
+
+      
+  const images = document.querySelectorAll('.slide-in');
+  
+  function imagesSliderIn(e){
+    let scroll = window.scrollY  +  window.innerHeight;
+    images.forEach(el => {
+      // 滾到圖片一半高度再讓圖片顯示出來
+      let showHeight = el.offsetTop + (el.offsetHeight / 2);
+      if(scroll >= showHeight){
+        el.classList.add('active');
+      }
+    })
+    
+  }
+
+  window.addEventListener('scroll', _.debounce( imagesSliderIn, 100));
+
 
   </script>
 
