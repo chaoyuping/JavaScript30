@@ -10,7 +10,7 @@
   <header>
     <h1>A story about getting lost.</h1>
   </header>
-
+  
   <nav id="main">
     <ul>
       <li class="logo"><a href="#">LOST.</a></li>
@@ -54,7 +54,23 @@
   </div>
 
 <script>
+  const mainNav = document.querySelector('#main');
+  const offsetTop = mainNav.offsetTop;
 
+  console.log(mainNav.offsetHeight)
+  function stickyNav(){
+     if(window.scrollY > offsetTop){
+      mainNav.classList.add('active');
+      // 要用mainNav.offsetHeight  不是用 mainNav.height
+      document.body.style.paddingTop = `${mainNav.offsetHeight}px`;
+     }else{
+      mainNav.classList.remove('active');
+      document.body.style.paddingTop = `0px`;
+     }
+  };
+
+  window.addEventListener('scroll',stickyNav)
+  
 </script>
 
 </body>
