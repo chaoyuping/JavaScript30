@@ -6,7 +6,7 @@
   <script type="text/javascript" src="http://www.cornify.com/js/cornify.js"></script>
 </head>
 <body> 
-<script>
+<script> 
   let inputCode=[];
   const secretCode = 'qq'
 
@@ -15,6 +15,7 @@
     
     // begin 若沒有到-6 的話會變成 0
     // 此可以維持六個字元 
+   // slice() 方法會回傳一個新陣列物件
      let cont =  inputCode.slice(-secretCode.length,inputCode.length).join('');
     
      
