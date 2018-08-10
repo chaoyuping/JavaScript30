@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+
+<body>
+  <h1>V = V0 + AT</h1>
+  <h1>X = X0 + V (linear)</h1>
+  <h1>Vy = Vy0 + AyT</h1>
+  <h1>Y = Y0 + Vy</h1>
+  <canvas id="draw" width="800" height="600"></canvas>
+
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      text-align: center;
+    }
+
+    #draw {
+      border: 1px solid #000;
+      margin: 10px auto;
+      display: block;
+    }
+  </style>
+  <script>
+
+    let time = 0 ;
+    const canvas = document.querySelector('#draw');
+    const ctx = canvas.getContext('2d');
+    let ball={
+      position:{
+        x:0,
+        y:0
+      },
+      velocity:{
+        x:100,
+        y:0
+      },
+      radius:10,
+      gravity:9.8,
+      acceleration:{
+        x:2,
+        y:2
+      }
+
+    }
+
+    function motion(distance){
+      
+      ctx.beginPath();
+      ctx.arc(ball.position.x,ball.position.y,ball.radius,0 ,Math.PI*2);
+      ctx.fillStyle="black";
+      ctx.fill();
+      ctx.stroke();
+
+      ball.velocity.x += ball.acceleration.x;
+      ball.position.x += ball.velocity.x/1000 *distance;
+      ball.velocity.y += ball.acceleration.y;
+      ball.position.y += ball.velocity.y/1000 *distance;
+
+    }
+
+    function render(t){
+    
+      canvas.width  = canvas.width;
+      motion(t-time);
+      time = t;
+      requestAnimationFrame(render);
+    }
+
+    requestAnimationFrame(render);
+
+  </script>
+
+
+</body>
+
+</html>

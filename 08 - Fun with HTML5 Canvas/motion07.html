@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+
+<body>
+  <canvas id="draw" width="800" height="600"></canvas>
+
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      text-align: center;
+    }
+
+    #draw {
+      border: 1px solid #000;
+      margin: 10px auto;
+      display: block;
+    }
+  </style>
+  <script>
+    const canvas = document.querySelector('#draw');
+    const ctx = canvas.getContext('2d');
+    let mouse = {
+      x: 400,
+      y: 300
+    }
+    let balls = [];
+    let gravity = .5;
+
+    function motion() {
+
+      balls.forEach( (item,index) => {
+
+        item.life--
+          if (item.life > 0) {
+            item.velocity.x += item.acceleration.x;
+            item.position.x += item.velocity.x / 100 ;
+
+            item.acceleration.y += gravity;
+            item.velocity.y += item.acceleration.y;
+            item.position.y += item.velocity.y / 100 ;
+
+            ctx.fillStyle = item.color;
+            ctx.beginPath();
+            ctx.arc(item.position.x, item.position.y, item.radius, 0, Math.PI * 2)
+            ctx.fill();
+
+          } else {
+            balls.splice(index, 1)
+          }
+
+      })
+
+    }
+
+
+
+    function render() {
+
+      canvas.width = canvas.width;
+      motion();
+      requestAnimationFrame(render);
+
+    }
+
+    canvas.addEventListener('click', (e) => {
+      let mouse = {
+        x: e.offsetX,
+        y: e.offsetY,
+      }
+
+        let color = '#' +parseInt( Math.random() * (255*255*255 -1 ) ).toString(16)
+      for (let i = 0; i < 45; i++) {
+        let angle = Math.random() * Math.PI * 2;
+        balls.push({
+          life: 100,
+          position: {
+            x: mouse.x,
+            y: mouse.y,
+          },
+          velocity: {
+            x: 0,
+            y: 0
+          },
+          acceleration: {
+            // 乘角度弄出來會比較圓，漂亮
+            x: Math.cos(angle) * (Math.random() * 10 + 5),
+            y: Math.sin(angle) * (Math.random() * 10 + 5),
+          },
+          radius: 5,
+          color
+        })
+        
+      
+      }
+
+    })
+
+    requestAnimationFrame(render);
+  </script>
+
+
+</body>
+
+</html>
