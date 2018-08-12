@@ -21,105 +21,113 @@
       border: 1px solid #000;
       margin: 10px auto;
       display: block;
-      background: #000;
+      background: rgb(2, 4, 30);
+      cursor: crosshair;
     }
   </style>
   <script>
     const canvas = document.querySelector('#draw');
     const ctx = canvas.getContext('2d');
-    let mouse = {
-      x: 400,
-      y: 300
-    }
+    let target = {
+      x: canvas.width / 2,
+      y: canvas.height
+    };
     let balls = [];
-    let gravity = .5;
- 
+    let gravity = -0.05;
+    let circleBall = [];
 
-    function motion() {
+    function draw() {
+      //開始發射的球
+      balls.forEach((item, index) => {
 
-      balls.forEach( (item,index) => {
-        item.life--
-        let opacity = item.life*2/100;
-        
+        //接近目標時越變越淡
+        let distance = item.target.y - item.position.y;
+        item.alpha = Math.min((distance * distance / 10000 * item.fade), 1);
 
-       
-          if (item.life > 0) {
-            item.velocity.x += item.acceleration.x;
-            item.position.x += item.velocity.x / 100 ;
+        let velY  = item.velocity * Math.sin(item.angle) / 10;
+        let velX = item.velocity * Math.cos(item.angle) / 10;
+        item.position.x += velX;
+        item.position.y -= velY;
 
-            item.acceleration.y += gravity;
-            item.velocity.y += item.acceleration.y;
-            item.position.y += item.velocity.y / 100 ;
+        ctx.fillStyle = `hsla(${item.color},100%,60%,${item.alpha})`;
+        ctx.beginPath();
+        ctx.arc(item.position.x, item.position.y, item.radius, 0, Math.PI * 2)
+        ctx.fill();
 
-            // ctx.fillStyle = item.color;
-            ctx.fillStyle = `hsla(${item.color},100%,80%,${opacity})`;
-            ctx.strokeStyle = `hsla(${item.color},100%,55%,${opacity})`;
-      
-            ctx.lineWidth=2;
-            // ctx.shadowBlur=20;
-            // ctx.shadowColor = `hsla(${item.color},100%,50%,${opacity})`; 
-            ctx.beginPath();
-            ctx.arc(item.position.x, item.position.y, item.radius, 0, Math.PI * 2)
-            ctx.fill();
-            ctx.stroke();
+  
 
-          } else {
-            balls.splice(index, 1)
-          }
+        if (item.alpha < 0.0005) {
+          balls.splice(index,1);
+        }
+      });
+    }
+    
+    function circle(){
+      let count = 50 + Math.random()*20;
+      let angle = Math.PI*2 / count;
 
-      })
+      for(let i=0; i< count ; i++){
+
+        let velocity = 4 + Math.random() * 2;
+
+        let ball ={
+           
+
+
+        }
+
+
+      }
+
 
     }
-
 
 
     function render() {
-      
-      // canvas.width = canvas.width;
-        ctx.fillStyle= 'rgba(0,0,0,.2)';
-        ctx.fillRect(0,0,canvas.width,canvas.height);
-   
 
-      motion();
+      // Gradually fade away
+      // ctx.fillStyle = 'rgba(2,4,30,.2)';
+      // ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+      canvas.width = canvas.width;
+      draw();
       requestAnimationFrame(render);
 
     }
 
+
     canvas.addEventListener('click', (e) => {
-      let mouse = {
+      target = {
         x: e.offsetX,
         y: e.offsetY,
+      };
+      let mx = e.offsetX - canvas.width / 2;
+      let my = canvas.height - e.offsetY;
+
+      let ball = {
+        position: {
+          x: canvas.width / 2,
+          y: canvas.height,
+        },
+        velocity: 4 + Math.random() * 2,
+        angle: Math.atan(my / mx),
+        alpha: 1,
+        fade: 0.5,
+        radius: 4,
+        target: {
+          x: e.offsetX,
+        y: e.offsetY,
+        },
+        color: Math.random() * 360, // hsla 的 h
       }
 
-        // let color = '#' +parseInt( Math.random() * (255*255*255 -1 ) ).toString(16)
-      //  let color = `${Math.random()*255},${Math.random()*255},${Math.random()*255}`;
-     
-      let color = Math.random()*360;
-      for (let i = 0; i < 45; i++) {
-   
-        let angle = Math.random() * Math.PI * 2;
-        balls.push({
-          life:100,
-          position: {
-            x: mouse.x,
-            y: mouse.y,
-          },
-          velocity: {
-            x: 0,
-            y: 0
-          },
-          acceleration: {
-            // 乘角度弄出來會比較圓，漂亮
-            x: Math.cos(angle) * (Math.random() * 10 + 5),
-            y: Math.sin(angle) * (Math.random() * 10 + 5),
-          },
-          radius: 2,
-          color
-        })
-        
-      
+      //修正方向
+      if( mx <0){
+        ball.velocity = -ball.velocity;
       }
-
+      balls.push(ball);
+      render();
     })
 
     requestAnimationFrame(render);
