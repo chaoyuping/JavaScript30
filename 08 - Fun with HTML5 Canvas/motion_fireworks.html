@@ -34,7 +34,7 @@
     };
     let balls = [];
     let gravity = -0.05;
-    let circleBall = [];
+    let circleBalls = [];
 
     function draw() {
       //開始發射的球
@@ -54,7 +54,6 @@
         ctx.arc(item.position.x, item.position.y, item.radius, 0, Math.PI * 2)
         ctx.fill();
 
-  
 
         if (item.alpha < 0.0005) {
           balls.splice(index,1);
@@ -62,25 +61,18 @@
       });
     }
     
-    function circle(){
-      let count = 50 + Math.random()*20;
-      let angle = Math.PI*2 / count;
 
-      for(let i=0; i< count ; i++){
+   
+ 
 
-        let velocity = 4 + Math.random() * 2;
+    //繪出煙火球
+    function drawFireworks(){
 
-        let ball ={
-           
-
-
-        }
-
-
-      }
-
+    
 
     }
+
+
 
 
     function render() {
@@ -104,7 +96,8 @@
       };
       let mx = e.offsetX - canvas.width / 2;
       let my = canvas.height - e.offsetY;
-
+      let color = Math.random() * 360; // hsla 的 h;
+      //發射的球
       let ball = {
         position: {
           x: canvas.width / 2,
@@ -119,15 +112,42 @@
           x: e.offsetX,
         y: e.offsetY,
         },
-        color: Math.random() * 360, // hsla 的 h
+        color,
       }
-
+   
       //修正方向
       if( mx <0){
         ball.velocity = -ball.velocity;
       }
       balls.push(ball);
+
+      // 煙火球
+      let count = 50 + Math.random()*20;
+      let circleAngle = Math.PI*2 / count;
+
+      for(let i=0; i< count ; i++){
+        let vel = 3 + Math.random() * 4;
+        let particleAngle = circleAngle * i;
+        let circleBall ={
+           life:100,
+           position:{
+             x:target.x,
+             y:target.y
+           },
+           velocity:{
+             x:vel * Math.cos(particleAngle),
+             y:vel * Math.sin(particleAngle),
+           },
+           color,
+           radius: 3 + Math.random()*3,
+           alpha:1,
+        }
+        circleBalls.push(circleBall);
+      }
+
+     
       render();
+
     })
 
     requestAnimationFrame(render);
