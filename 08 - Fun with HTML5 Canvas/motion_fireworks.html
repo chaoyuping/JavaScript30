@@ -52,16 +52,16 @@
             item.position.y += item.velocity.y / 100 ;
 
             // ctx.fillStyle = item.color;
-            ctx.fillStyle = `hsla(${item.color},100%,75%,${opacity})`;
-            // ctx.strokeStyle = `hsla(${item.color},100%,50%,${opacity})`;
+            ctx.fillStyle = `hsla(${item.color},100%,80%,${opacity})`;
+            ctx.strokeStyle = `hsla(${item.color},100%,55%,${opacity})`;
       
-            // ctx.lineWidth=2;
+            ctx.lineWidth=2;
             // ctx.shadowBlur=20;
             // ctx.shadowColor = `hsla(${item.color},100%,50%,${opacity})`; 
             ctx.beginPath();
             ctx.arc(item.position.x, item.position.y, item.radius, 0, Math.PI * 2)
             ctx.fill();
-            // ctx.stroke();
+            ctx.stroke();
 
           } else {
             balls.splice(index, 1)
@@ -75,8 +75,9 @@
 
     function render() {
       
-      canvas.width = canvas.width;
-
+      // canvas.width = canvas.width;
+        ctx.fillStyle= 'rgba(0,0,0,.2)';
+        ctx.fillRect(0,0,canvas.width,canvas.height);
    
 
       motion();
