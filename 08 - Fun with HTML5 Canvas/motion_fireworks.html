@@ -21,19 +21,21 @@
       border: 1px solid #000;
       margin: 10px auto;
       display: block;
-      background: rgb(2, 4, 30);
+      background: url('https://images.unsplash.com/photo-1482977254323-bdef035f8cdb?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=e1be099fb609e3a578de1d949724ff23&auto=format&fit=crop&w=1350&q=80') center center;
+      background-size:cover; 
       cursor: crosshair;
     }
   </style>
   <script>
     const canvas = document.querySelector('#draw');
     const ctx = canvas.getContext('2d');
+    let [vw, vh] = [800, 600];
     let target = {
-      x: canvas.width / 2,
-      y: canvas.height
+      x: vw / 2,
+      y: vh
     };
     let balls = [];
-    let gravity = -0.05;
+    let gravity = 0.01;
     let circleBalls = [];
 
     function draw() {
@@ -42,10 +44,10 @@
 
         //接近目標時越變越淡
         let distance = item.target.y - item.position.y;
-        item.alpha = Math.min((distance * distance / 10000 * item.fade), 1);
+        item.alpha = Math.min((distance * distance / 10000 * 0.6), 1);
 
-        let velY  = item.velocity * Math.sin(item.angle) / 10;
-        let velX = item.velocity * Math.cos(item.angle) / 10;
+        let velY = item.velocity * Math.sin(item.angle);
+        let velX = item.velocity * Math.cos(item.angle);
         item.position.x += velX;
         item.position.y -= velY;
 
@@ -55,102 +57,123 @@
         ctx.fill();
 
 
-        if (item.alpha < 0.0005) {
-          balls.splice(index,1);
+        if (item.alpha < 0.001) {
+         
+          createFireworks(item.target,item.color);
+          balls.splice(index, 1);
         }
+        
       });
-    }
-    
 
-   
- 
+      drawFireworks();
+    }
+
+  // 產生煙火球
+     function createFireworks(target,color){
+
+        let count = 20 + Math.random()*20;
+        let angle = Math.PI*2 / count;
+       
+        for(let i=0; i< count ; i++){
+
+          
+          let vel = 3 + Math.random() * 0.7;
+
+          let particleAngle = angle * i;
+          let circleBall ={
+             life:100,
+             position:{
+               x:target.x,
+               y:target.y
+             },
+             velocity:{
+               x:vel * Math.cos(particleAngle),
+               y:vel * Math.sin(particleAngle),
+             },
+             color,
+             radius: 2 + Math.random() *3 ,
+          }
+          circleBalls.push(circleBall);
+        }
+
+     }
+
 
     //繪出煙火球
     function drawFireworks(){
 
-    
+      circleBalls.forEach( (item,index)=>{ 
+          item.life --;
 
+        if( item.life > 0 ){
+
+          item.position.x += item.velocity.x;
+
+          item.velocity.y += gravity; 
+          item.position.y += item.velocity.y;
+          item.alpha = Math.min((item.life * item.life / 10000 * 1.3 ), 1);
+
+
+          ctx.fillStyle = `hsla(${item.color},100%,60%,${item.alpha})`;
+          ctx.strokeStyle = `hsla(${item.color},100%,50%,${item.alpha})`;
+          ctx.lineWidth=2;
+          ctx.beginPath();
+          ctx.arc(item.position.x, item.position.y, item.radius, 0, Math.PI * 2)
+          ctx.fill();
+          ctx.stroke();
+        }else{
+          circleBalls.splice(index,1);
+        }
+      });
     }
 
 
 
 
     function render() {
-
-      // Gradually fade away
-      // ctx.fillStyle = 'rgba(2,4,30,.2)';
-      // ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-
       canvas.width = canvas.width;
       draw();
       requestAnimationFrame(render);
 
-    }
+    
 
+    }
+    requestAnimationFrame(render);
 
     canvas.addEventListener('click', (e) => {
       target = {
         x: e.offsetX,
         y: e.offsetY,
       };
-      let mx = e.offsetX - canvas.width / 2;
-      let my = canvas.height - e.offsetY;
-      let color = Math.random() * 360; // hsla 的 h;
+
+      let mx = target.x - vw / 2;
+      let my = vh - target.y;
+   
+
+      
       //發射的球
       let ball = {
         position: {
-          x: canvas.width / 2,
-          y: canvas.height,
+          x: vw / 2,
+          y: vh,
         },
-        velocity: 4 + Math.random() * 2,
+        velocity: 6 + Math.random() * 4,
         angle: Math.atan(my / mx),
-        alpha: 1,
-        fade: 0.5,
         radius: 4,
-        target: {
-          x: e.offsetX,
-        y: e.offsetY,
-        },
-        color,
+        target,
+        alpha: 1,
+        color:Math.random() * 360, // hsla 的 h;,
       }
-   
+
       //修正方向
-      if( mx <0){
-        ball.velocity = -ball.velocity;
+      if (mx < 0) {
+        ball.velocity *= -1;
       }
       balls.push(ball);
-
-      // 煙火球
-      let count = 50 + Math.random()*20;
-      let circleAngle = Math.PI*2 / count;
-
-      for(let i=0; i< count ; i++){
-        let vel = 3 + Math.random() * 4;
-        let particleAngle = circleAngle * i;
-        let circleBall ={
-           life:100,
-           position:{
-             x:target.x,
-             y:target.y
-           },
-           velocity:{
-             x:vel * Math.cos(particleAngle),
-             y:vel * Math.sin(particleAngle),
-           },
-           color,
-           radius: 3 + Math.random()*3,
-           alpha:1,
-        }
-        circleBalls.push(circleBall);
-      }
-
-     
-      render();
+      console.log(balls);
+      console.log(circleBalls);
 
     })
-
-    requestAnimationFrame(render);
   </script>
 
 
