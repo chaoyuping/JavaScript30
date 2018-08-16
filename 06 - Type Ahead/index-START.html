@@ -2,20 +2,20 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8"> 
+  <meta charset="UTF-8">
   <title>Type Ahead 👀</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
-<body> 
+<body>
 
 
- <!-- autocomplete="off"  讓點選後不要有browser cookie 產生的 autocomplete -->
+  <!-- autocomplete="off"  讓點選後不要有browser cookie 產生的 autocomplete -->
   <form class="search-form">
-    <input type="text" class="search"   autocomplete="off" id="search" placeholder="City or State">
+    <input type="text" class="search" autocomplete="off" id="search" placeholder="City or State">
     <ul class="suggestions">
-      <li>Filter for a city</li>
-      <li>or a state</li>
+      <!-- <li class="active">Filter for a city</li>
+      <li>or a state</li> -->
     </ul>
   </form>
   <script>
@@ -27,25 +27,41 @@
     fetch(endpoint)
       .then(res => res.json())
       .then(data => cities.push(...data));
-  
-   function findMatches(wordToMatch, cities){
-     return cities.filter(el =>{
-       return el.city.match(wordToMatch) || el.state.match(wordToMatch);
-     })
-  }
- function numberWithCommas(number){
-  return number.replace(/\B(?=(?:\d{3})+\b)/g, ',');
- }
+
+    function findMatches(wordToMatch, cities) {
+      return cities.filter(el => {
+        return el.city.match(wordToMatch) || el.state.match(wordToMatch);
+      })
+    }
+
+    //三個位數加一個,
+    function numberWithCommas(number) {
+      return number.replace(/\B(?=(?:\d{3})+\b)/g, ',');
+    }
 
 
+    let resultData = [];
 
-    function displayMatches(){
-      if(this.value == '') return false;
-      let reg = new RegExp(this.value , 'gi');
-      let resultData = findMatches(reg,cities);
-      let html = resultData.map(item=>{
-        const cityName  = item.city.replace(reg,`<span class="hl">${reg}</span>`);
-        const stateName = item.state.replace(reg,`<span class="hl">${reg}</span>`);
+    function displayMatches() {
+      if (this.value == '') return false;
+      let top10 = [];
+      let reg = new RegExp(this.value, 'gi');
+      resultData = findMatches(reg, cities);
+
+      //最多顯示前10筆
+      if (resultData.length > 10) {
+        for (let i = 0; i < 10; i++) {
+          top10.push(resultData[i]);
+        }
+      } else {
+        for (let i = 0; i < resultData.length; i++) {
+          top10.push(resultData[i]);
+        }
+      }
+
+      let html = top10.map(item => {
+        const cityName = item.city.replace(reg, `<span class="hl">${reg}</span>`);
+        const stateName = item.state.replace(reg, `<span class="hl">${reg}</span>`);
         return `<li>
         <span class="name">${ cityName},${stateName}</span>
         <span  class="population">${ numberWithCommas(item.population)}</span>
@@ -53,13 +69,83 @@
       }).join('');
       suggestions.innerHTML = html;
 
+
+
     };
+
+    let listIndex = -1;
+
+    function handleList(e) {
+      //去頭尾空白
+      let value = this.value.replace(/^\s+|\s+$/g, "")
+      if (value === '') return;
+
+      let reGet = document.querySelector('.suggestions');
+      let liList = reGet.querySelectorAll('li');
+
+      switch (e.keyCode) {
+        case 40:   // 上的按鈕
+          listIndex >= (liList.length - 1) ? listIndex = liList.length - 1 : listIndex++;
+          break;
+        case 38:  // 下的按鈕
+          listIndex <= 0 ? 　listIndex = 0 : 　listIndex--;
+          break;
+        default:  //不管按任何鍵 都會重新產生active
+         listIndex = -1;    
+        
+       
+      }
+
+      if (listIndex >= 0 && liList.length >0) {
+        liList.forEach(el => el.classList.remove('active'));
+        liList.item(listIndex).classList.add('active');
+      }
+
+      if (e.keyCode == 13) {
+        getSelectValue(liList);
+      }
+
+    };
+
+    //enter 拿 active 的值
+    function getSelectValue(arr) {
+      if(arr.length ==0) return;
+      let value;
+      arr.forEach(el => {
+        if(el.classList.contains('active')){
+          value =  el;
+        }
+      });
+      searchInput.value =  value.querySelector('.name').textContent;
+      suggestions.innerHTML = '';
+    
+    }
+
+ 
 
     let searchInput = document.querySelector('.search');
     let suggestions = document.querySelector('.suggestions');
-    searchInput.addEventListener('input',displayMatches);
+    let searchForm = document.querySelector('.search-form');
+
+    searchInput.addEventListener('input', displayMatches);
+    searchInput.addEventListener('keydown', handleList);
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+    });
 
 
+    //點選下方列表，將數值給input 
+    suggestions.addEventListener('click', (e)=>{
+     
+      let value;
+     if(e.target.nodeName != "LI") return;
+     value = e.target.querySelector('.name').textContent
+     searchInput.value = value;
+     //清除下方產生的list
+     suggestions.innerHTML = '';
+     //重新顯示active
+     listIndex = -1;
+    })
   </script>
 </body>
 
